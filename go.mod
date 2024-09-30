@@ -3,6 +3,7 @@ module github.com/golang-template
 go 1.22.2
 
 require (
+	github.com/go-chi/chi/v5 v5.1.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/viper v1.19.0
 	gopkg.in/yaml.v2 v2.4.0

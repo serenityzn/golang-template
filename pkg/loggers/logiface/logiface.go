@@ -1,6 +1,9 @@
 package logiface
 
-import "github.com/golang-template/pkg/types"
+import (
+	"github.com/golang-template/pkg/types"
+	"net/http"
+)
 
 type Logiface interface {
 	Debug(msg string)
@@ -9,4 +12,5 @@ type Logiface interface {
 	SetLogLevel(level string)
 	SetLogOutput(outType types.LogOutput, logFileName string) error
 	GetLogsCount() uint
+	ServeHTTP(next http.Handler) http.Handler
 }

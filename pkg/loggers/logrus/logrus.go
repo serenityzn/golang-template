@@ -2,10 +2,14 @@ package logrus
 
 import (
 	"fmt"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/golang-template/pkg/loggers/logiface"
 	"github.com/golang-template/pkg/types"
 	"github.com/sirupsen/logrus"
+	"net/http"
+	"net/url"
 	"os"
+	"time"
 )
 
 const logName = "logrus"
@@ -87,4 +91,46 @@ func getLogFile(name string) (*os.File, error) {
 	}
 
 	return file, nil
+}
+func (l *LogrusLogger) ServeHTTP(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		start := time.Now()
+
+		// Build the full URL format: http://ip:port/uri_path.
+		scheme := "http"
+		if r.TLS != nil {
+			scheme = "https"
+		}
+		fullURL := url.URL{
+			Scheme: scheme,
+			Host:   r.Host,
+			Path:   r.URL.Path,
+		}
+
+		// Wrap the ResponseWriter to capture the status code.
+		ww := middleware.NewWrapResponseWriter(w, r.ProtoMajor)
+
+		// Log request information before calling the next handler.
+		l.log.WithFields(logrus.Fields{
+			"full_url":   fullURL.String(),
+			"method":     r.Method,
+			"remote":     r.RemoteAddr,
+			"user-agent": r.UserAgent(),
+		}).Info("request started")
+
+		// Call the next handler.
+		next.ServeHTTP(ww, r)
+
+		// Log request information after the request is completed, including the status code.
+		l.log.WithFields(logrus.Fields{
+			"full_url":     fullURL.String(),
+			"method":       r.Method,
+			"status":       ww.Status(),
+			"path":         r.URL.Path,
+			"remote":       r.RemoteAddr,
+			"user-agent":   r.UserAgent(),
+			"duration":     time.Since(start),
+			"responseSize": ww.BytesWritten(),
+		}).Info("request completed")
+	})
 }

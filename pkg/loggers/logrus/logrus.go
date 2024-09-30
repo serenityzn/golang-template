@@ -10,8 +10,6 @@ import (
 
 const logName = "logrus"
 
-var logger = LogrusLogger{}
-
 type LogrusLogger struct {
 	log   *logrus.Logger
 	count uint

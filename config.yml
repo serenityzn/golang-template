@@ -1,0 +1,4 @@
+log:
+  level: debug
+  out: 1
+  name: "file.log"

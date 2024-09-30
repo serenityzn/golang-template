@@ -2,3 +2,8 @@ log:
   level: debug
   out: 0
   name: "file.log"
+
+
+http:
+  hostaddress: "127.0.0.1:4141"
+  timeout: 60

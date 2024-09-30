@@ -12,8 +12,14 @@ type logS struct {
 	Name  string          `yaml:"name"`
 }
 
+type http struct {
+	HostAddress string `yaml:"hostaddress"`
+	Timeout     int    `yaml:"timeout"`
+}
+
 type config struct {
-	Log logS `yaml:"log"`
+	Log  logS `yaml:"log"`
+	Http http `yaml:"http"`
 }
 
 func configInit(configName string) (*config, error) {

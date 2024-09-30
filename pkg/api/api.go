@@ -12,14 +12,14 @@ import (
 	"github.com/golang-template/pkg/loggers/logiface"
 )
 
-const version = "version-1.0"
+const version = "version-1.0\n"
 
 type Api struct {
 	router *chi.Mux
 	logger logiface.Logiface
 }
 
-func (a *Api) StartRouter(hostAddress string) {
+func (a *Api) StartRouter(hostAddress string, timeout time.Duration) {
 	a.logger.Info("Starting chi router for rest api.")
 	if !ValidateHostAddress(hostAddress) {
 		a.logger.Error("Wrong host address string. Must be <host>:<port> .")
@@ -33,7 +33,7 @@ func (a *Api) StartRouter(hostAddress string) {
 	a.router.Use(a.logger.ServeHTTP)
 	a.router.Use(middleware.Recoverer)
 
-	a.router.Use(middleware.Timeout(60 * time.Second))
+	a.router.Use(middleware.Timeout(timeout * time.Second))
 
 	a.router.Get("/version", getVersion)
 

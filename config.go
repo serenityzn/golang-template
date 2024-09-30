@@ -60,5 +60,8 @@ func configInit(configName string) (*config, error) {
 		myConfig.Log.Level = logLevel
 	}
 
+	myConfig.Http.HostAddress = viper.GetString("http.hostaddress")
+	myConfig.Http.Timeout = viper.GetInt("http.timeout")
+
 	return &myConfig, nil
 }

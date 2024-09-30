@@ -110,13 +110,13 @@ func (l *LogrusLogger) ServeHTTP(next http.Handler) http.Handler {
 		// Wrap the ResponseWriter to capture the status code.
 		ww := middleware.NewWrapResponseWriter(w, r.ProtoMajor)
 
-		// Log request information before calling the next handler.
-		l.log.WithFields(logrus.Fields{
-			"full_url":   fullURL.String(),
-			"method":     r.Method,
-			"remote":     r.RemoteAddr,
-			"user-agent": r.UserAgent(),
-		}).Info("request started")
+		//// Log request information before calling the next handler.
+		//l.log.WithFields(logrus.Fields{
+		//	"full_url":   fullURL.String(),
+		//	"method":     r.Method,
+		//	"remote":     r.RemoteAddr,
+		//	"user-agent": r.UserAgent(),
+		//}).Info("request started")
 
 		// Call the next handler.
 		next.ServeHTTP(ww, r)

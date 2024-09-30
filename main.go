@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/golang-template/pkg/api"
 	"github.com/golang-template/pkg/loggers/logrus"
+	"time"
 )
 
 func main() {
@@ -25,6 +26,6 @@ func main() {
 	myLog.Info("Log Sysyem Initialised.")
 
 	router := api.NewApi(myLog)
-	router.StartRouter("127.0.0.1:4141")
+	router.StartRouter(conf.Http.HostAddress, time.Duration(conf.Http.Timeout))
 
 }

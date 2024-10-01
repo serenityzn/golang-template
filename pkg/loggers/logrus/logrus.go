@@ -50,7 +50,7 @@ func (l *LogrusLogger) Info(msg string) {
 	}).Info(msg)
 }
 
-func (l *LogrusLogger) SetLogLevel(level string) {
+func (l *LogrusLogger) SetLogLevel(level types.LogLevel) {
 	if level == "error" {
 		l.log.SetLevel(logrus.ErrorLevel)
 	} else if level == "debug" {
@@ -61,7 +61,7 @@ func (l *LogrusLogger) SetLogLevel(level string) {
 	l.count++
 }
 
-func (l *LogrusLogger) SetLogOutput(outType types.LogOutput, logFileName string) error {
+func (l *LogrusLogger) SetLogOutput(outType types.LogOutput, logFileName types.LogName) error {
 	switch outType {
 	case types.Stdout:
 		l.log.Out = os.Stdout
@@ -80,10 +80,10 @@ func (l *LogrusLogger) GetLogsCount() uint {
 	return l.count
 }
 
-func getLogFile(name string) (*os.File, error) {
-	file, err := os.OpenFile(name, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+func getLogFile(name types.LogName) (*os.File, error) {
+	file, err := os.OpenFile(name.String(), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
-		file, err := os.Create(name)
+		file, err := os.Create(name.String())
 		if err != nil {
 			return nil, err
 		}

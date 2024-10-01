@@ -1,29 +1,38 @@
 package main
 
 import (
-	"errors"
 	"github.com/golang-template/pkg/types"
 	"github.com/spf13/viper"
 )
 
+const portMin = 1024
+const portMax = 49151
+
 type logS struct {
-	Level string          `yaml:"level"`
+	Level types.LogLevel  `yaml:"level"`
 	Out   types.LogOutput `yaml:"out"`
-	Name  string          `yaml:"name"`
+	Name  types.LogName   `yaml:"name"`
 }
 
 type http struct {
-	HostAddress string `yaml:"hostaddress"`
-	Timeout     int    `yaml:"timeout"`
+	Host    types.HttpHost     `yaml:"host"`
+	Port    types.ConfHttpPort `yaml:"port"`
+	Timeout int                `yaml:"timeout"`
 }
 
 type config struct {
-	Log  logS `yaml:"log"`
-	Http http `yaml:"http"`
+	Log  *logS `yaml:"log"`
+	Http *http `yaml:"http"`
 }
 
+func (c *config) Validate() bool {
+	if c.Http == nil || c.Log == nil || c.Http.Timeout == 0 || c.Http.Host.Validate() != nil || c.Http.Port > portMax ||
+		c.Http.Port < portMin || c.Log.Out > 1 || c.Log.Out < 0 || len(c.Log.Name) == 0 {
+		return false
+	}
+	return true
+}
 func configInit(configName string) (*config, error) {
-	var myConfig = config{}
 
 	viper.SetConfigName(configName)
 	viper.SetConfigType("yaml")
@@ -34,34 +43,11 @@ func configInit(configName string) (*config, error) {
 		return nil, err
 	}
 
-	logOut := viper.GetInt("log.out")
-	if logOut != 0 && logOut != 1 {
-		return nil, errors.New("ERROR reading config. Config doesn't have log.out value!")
+	conf := &config{}
+	err = viper.Unmarshal(conf)
+	if err != nil {
+		return nil, err
 	}
 
-	if logOut == int(types.Stdout) {
-		myConfig.Log.Out = types.Stdout
-	} else if logOut == int(types.Fileout) {
-		myConfig.Log.Out = types.Fileout
-		fileName := viper.GetString("log.name")
-		if len(fileName) < 1 {
-			return nil, errors.New("ERROR reading config. Config doesn't have log.name or it is empty!")
-		}
-		myConfig.Log.Name = fileName
-	}
-
-	logLevel := viper.GetString("log.level")
-	if len(logLevel) < 1 {
-		return nil, errors.New("ERROR reading config. Config doesn't have log.level value!!!")
-	}
-
-	myConfig.Log.Level = "info"
-	if logLevel == "info" || logLevel == "debug" || logLevel == "error" {
-		myConfig.Log.Level = logLevel
-	}
-
-	myConfig.Http.HostAddress = viper.GetString("http.hostaddress")
-	myConfig.Http.Timeout = viper.GetInt("http.timeout")
-
-	return &myConfig, nil
+	return conf, nil
 }

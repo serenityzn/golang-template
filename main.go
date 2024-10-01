@@ -14,6 +14,11 @@ func main() {
 		fmt.Printf("%v\n", err)
 		return
 	}
+
+	if !conf.Validate() {
+		fmt.Printf("ERROR: Config validation failed!")
+		return
+	}
 	// Initialising Log system
 	myLog := logrus.NewLogrusLogger()
 	myLog.SetLogLevel(conf.Log.Level)
@@ -25,7 +30,7 @@ func main() {
 
 	myLog.Info("Log Sysyem Initialised.")
 
-	router := api.NewApi(myLog)
-	router.StartRouter(conf.Http.HostAddress, time.Duration(conf.Http.Timeout))
+	router := api.NewApi(myLog, conf.Http.Host, conf.Http.Port, time.Duration(conf.Http.Timeout))
+	router.StartRouter()
 
 }

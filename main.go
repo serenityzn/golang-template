@@ -3,13 +3,14 @@ package main
 import (
 	"fmt"
 	"github.com/golang-template/pkg/api"
+	"github.com/golang-template/pkg/config"
 	"github.com/golang-template/pkg/loggers/logrus"
 	"time"
 )
 
 func main() {
 	// Initialising config
-	conf, err := configInit("config")
+	conf, err := config.ConfigInit("config")
 	if err != nil {
 		fmt.Printf("%v\n", err)
 		return
@@ -33,4 +34,10 @@ func main() {
 	router := api.NewApi(myLog, conf.Http.Host, conf.Http.Port, time.Duration(conf.Http.Timeout))
 	router.StartRouter()
 
+}
+func exampleTask() {
+	// Simulating a long-running task
+	fmt.Println("Starting calculations...")
+	time.Sleep(10 * time.Second) // Simulate time-consuming work
+	fmt.Println("Calculations completed.")
 }

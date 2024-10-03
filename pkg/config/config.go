@@ -1,4 +1,4 @@
-package main
+package config
 
 import (
 	"github.com/golang-template/pkg/types"
@@ -32,7 +32,7 @@ func (c *config) Validate() bool {
 	}
 	return true
 }
-func configInit(configName string) (*config, error) {
+func ConfigInit(configName string) (*config, error) {
 
 	viper.SetConfigName(configName)
 	viper.SetConfigType("yaml")
